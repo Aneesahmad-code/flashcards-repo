@@ -48,5 +48,5 @@ export const endpoints = {
   flashcardsGenerate(studentId, topicId) { return `/flashcards/students/${studentId}/topics/${topicId}/flashcards:generate`; },
   // Some backends expose a topic-only list route
   flashcardsListByTopic(topicId) { return `/flashcards/topics/${topicId}/flashcards`; },
+  flashcardsDeleteByTopic(topicId, cardId) { return `/flashcards/topics/${topicId}/flashcards/${cardId}`; },
 };
-

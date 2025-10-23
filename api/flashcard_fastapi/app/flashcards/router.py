@@ -8,6 +8,7 @@ from .service import (
     create_flashcards_bulk,
     list_flashcards_for_topic,
     _topic_owned_by_student,
+    delete_flashcard_for_topic,
 )
 from ..ai.gemini import generate_flashcards as gemini_generate
 
@@ -48,3 +49,13 @@ def generate_and_save_flashcards(student_id: int, topic_id: int, body: GenerateF
     # Save to DB
     created = create_flashcards_bulk(db, values=values, topicId=topic_id)
     return created
+
+
+# --- NEW: delete one flashcard (topic-scoped) ---
+@router.delete("/topics/{topic_id}/flashcards/{flashcard_id}", status_code=204)
+def delete_one_flashcard(topic_id: int, flashcard_id: int, db: Session = Depends(get_db)):
+    try:
+        delete_flashcard_for_topic(db, topic_id=topic_id, flashcard_id=flashcard_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    return None

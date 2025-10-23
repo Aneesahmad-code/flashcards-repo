@@ -131,7 +131,68 @@ function renderTopicsList() {
 
     const actions = document.createElement('div');
     actions.className = 'topic-actions';
-    // TODO: add Open/Edit/Delete later
+    // Action buttons: Open / Edit / Delete
+    const openBtn = document.createElement('button');
+    openBtn.className = 'primary-button';
+    openBtn.type = 'button';
+    openBtn.textContent = 'Open';
+    openBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showFlashcardsForTopic(t);
+    });
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'secondary-button';
+    editBtn.type = 'button';
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', async () => {
+      const next = prompt(`Rename "${t.title}"`, t.title);
+      if (!next || !next.trim() || next.trim() === t.title) return;
+      try {
+        const endpoint = `${endpoints.topicsForSubject(state.studentId, state.selectedSubject?.id || t.subjectId || t.subject_id)}/${t.id}`;
+        let updated = await fetchAPI(endpoint, {
+          method: 'PATCH',
+          body: JSON.stringify({ title: next.trim() }),
+        });
+        if (!updated) updated = { ...t, title: next.trim() }; // handle 204
+        setTopics((state.topics || []).map((x) => (String(x.id) === String(t.id) ? { ...x, ...updated } : x)));
+        renderTopicsList();
+      } catch (err) {
+        const errBox = $('topicErrorMessage');
+        if (errBox) errBox.textContent = err.data?.message || 'Failed to update topic.';
+      }
+    });
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'danger-button';
+    delBtn.type = 'button';
+    delBtn.textContent = 'Delete';
+    delBtn.addEventListener('click', async () => {
+      try {
+        const endpoint = `${endpoints.topicsForSubject(state.studentId, state.selectedSubject?.id || t.subjectId || t.subject_id)}/${t.id}`;
+        await fetchAPI(endpoint, { method: 'DELETE' });
+        setTopics((state.topics || []).filter((x) => String(x.id) !== String(t.id)));
+        if (state.selectedTopic?.id && String(state.selectedTopic.id) === String(t.id)) {
+          try { selectTopic(null); } catch {}
+          const flashSection = $('flashcardSection');
+          const genHost = $('flashcardsContainer');
+          const savedHost = $('savedFlashcardsContainer');
+          const savedSection = $('savedFlashcardsSection');
+          if (genHost) genHost.innerHTML = '';
+          if (savedHost) savedHost.innerHTML = '';
+          if (savedSection) savedSection.style.display = 'none';
+          if (flashSection) flashSection.style.display = 'none';
+        }
+        renderTopicsList();
+      } catch (err) {
+        const errBox = $('topicErrorMessage');
+        if (errBox) errBox.textContent = err.data?.message || 'Failed to delete topic.';
+      }
+    });
+
+    actions.appendChild(openBtn);
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
 
     li.appendChild(name);
     li.appendChild(actions);

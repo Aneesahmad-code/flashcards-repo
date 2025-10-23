@@ -58,6 +58,14 @@ class TopicServicePort:
         """
         raise NotImplementedError
 
+    def update_title(self, db, *, student_id: int, subject_id: int, topic_id: int, title: str) -> dict:
+        """Update topic title and return updated topic."""
+        raise NotImplementedError
+
+    def delete(self, db, *, student_id: int, subject_id: int, topic_id: int) -> None:
+        """Delete a topic; flashcards are removed via cascade."""
+        raise NotImplementedError
+
 
 # Inject your real implementation here
 from . import service as _svc
@@ -71,6 +79,20 @@ class _RealTopicService(TopicServicePort):
     def create(self, db, *, student_id: int, subject_id: int, title: str):
         return _svc.create_topic_for_student_subject(
             db, student_id=student_id, subject_id=subject_id, title=title
+        )
+
+    def update_title(self, db, *, student_id: int, subject_id: int, topic_id: int, title: str):
+        return _svc.update_topic_title_for_student_subject(
+            db,
+            student_id=student_id,
+            subject_id=subject_id,
+            topic_id=topic_id,
+            title=title,
+        )
+
+    def delete(self, db, *, student_id: int, subject_id: int, topic_id: int) -> None:
+        return _svc.delete_topic_for_student_subject(
+            db, student_id=student_id, subject_id=subject_id, topic_id=topic_id
         )
 
 topic_service: TopicServicePort = _RealTopicService()
@@ -127,3 +149,59 @@ def create_topic(student_id: int, subject_id: int, payload: TopicCreate, db=Depe
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create topic: {e}")
+
+
+# ---- New: Update & Delete ----------------------------------------------------
+
+class TopicUpdate(BaseModel):
+    title: str
+
+    if not HAS_V2:
+        class Config:
+            extra = "ignore"
+    else:
+        model_config = ConfigDict(extra="ignore")
+
+
+@router.patch(
+    "/students/{student_id}/subjects/{subject_id}/topics/{topic_id}",
+    response_model=TopicOut,
+    status_code=status.HTTP_200_OK,
+)
+def update_topic(
+    student_id: int,
+    subject_id: int,
+    topic_id: int,
+    payload: TopicUpdate,
+    db=Depends(get_db),
+):
+    title = (payload.title or "").strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Title is required.")
+    try:
+        updated = topic_service.update_title(
+            db,
+            student_id=student_id,
+            subject_id=subject_id,
+            topic_id=topic_id,
+            title=title,
+        )
+        return updated
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update topic: {e}")
+
+
+@router.delete(
+    "/students/{student_id}/subjects/{subject_id}/topics/{topic_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_topic(student_id: int, subject_id: int, topic_id: int, db=Depends(get_db)):
+    try:
+        topic_service.delete(db, student_id=student_id, subject_id=subject_id, topic_id=topic_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete topic: {e}")
+    return None

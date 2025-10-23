@@ -182,5 +182,31 @@ function buildCard(item) {
     card.classList.toggle('flipped');
   });
 
+  // Actions bar (delete only for saved cards that have an id)
+  const actions = document.createElement('div');
+  actions.className = 'flashcard-actions';
+  if (item?.id) {
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'button-link delete-flashcard-btn';
+    del.textContent = 'Delete';
+    del.addEventListener('click', async (e) => {
+      e.stopPropagation(); // avoid flip
+      try {
+        const topicId = state.selectedTopic?.id;
+        if (!topicId) return;
+        await fetchAPI(endpoints.flashcardsDeleteByTopic(topicId, item.id), { method: 'DELETE' });
+        // Remove from DOM and refresh saved list
+        card.remove();
+        try { await loadSavedFlashcards(); } catch {}
+      } catch (err) {
+        const errBox = document.getElementById('errorMessage');
+        if (errBox) errBox.textContent = err.data?.message || 'Failed to delete flashcard.';
+      }
+    });
+    actions.appendChild(del);
+  }
+  card.appendChild(actions);
+
   return card;
 }

@@ -29,3 +29,22 @@ def create_flashcards_bulk(db: Session, *, values: list[str], topicId: int) -> l
 def list_flashcards_for_topic(db: Session, *, topic_id: int) -> list[Flashcard]:
     return db.query(Flashcard).filter(Flashcard.topicId == topic_id).order_by(Flashcard.id.asc()).all()
 
+
+def get_flashcard_for_topic(
+    db: Session, *, topic_id: int, flashcard_id: int
+) -> Flashcard | None:
+    return (
+        db.query(Flashcard)
+        .filter(Flashcard.id == flashcard_id, Flashcard.topicId == topic_id)
+        .first()
+    )
+
+
+def delete_flashcard_for_topic(
+    db: Session, *, topic_id: int, flashcard_id: int
+) -> None:
+    f = get_flashcard_for_topic(db, topic_id=topic_id, flashcard_id=flashcard_id)
+    if not f:
+        raise ValueError("Flashcard not found for this topic")
+    db.delete(f)
+    db.commit()
