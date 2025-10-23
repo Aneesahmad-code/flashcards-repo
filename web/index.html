@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcard Generator Pro</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://esm.sh/@google/genai@^0.7.0"
+      }
+    }
+  </script>
+  <script>
+    window.process = {
+      env: {
+        API_KEY: "AIzaSyDGoiOGryyNpMa7gqF1soj8G-HlO4fMVpQ"
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo-title">
+      <h1>Flashcard Pro</h1>
+    </div>
+    <nav id="authNav">
+      <button id="showLoginNavButton" class="nav-button">Login</button>
+      <button id="showRegisterNavButton" class="nav-button">Register</button>
+    </nav>
+    <div id="userNav" class="user-nav" style="display: none;">
+      <span id="welcomeMessage" class="welcome-message"></span>
+      <button id="logoutButton" class="nav-button">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Authentication View -->
+    <div id="authView">
+      <section id="loginView" class="auth-section card" style="display: none;">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginUsername">Username or Email</label>
+            <input type="text" id="loginUsername" name="username" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="password" required>
+          </div>
+          <button type="submit" class="primary-button">Login</button>
+          <p class="auth-switch">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+        </form>
+      </section>
+
+      <section id="registerView" class="auth-section card" style="display: none;">
+        <h2>Register</h2>
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="registerName">Full Name</label>
+            <input type="text" id="registerName" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">Email</label>
+            <input type="email" id="registerEmail" name="email" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Password</label>
+            <input type="password" id="registerPassword" name="password" required>
+          </div>
+          <button type="submit" class="primary-button">Register</button>
+          <p class="auth-switch">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
+        </form>
+      </section>
+       <div id="authMessage" class="error-message" aria-live="polite"></div>
+    </div>
+
+    <!-- Main Application View (hidden by default) -->
+    <div id="appView" style="display: none;">
+      <section id="subjectManagement" class="card">
+        <h2>My Subjects</h2>
+        <form id="createSubjectForm" class="form-inline">
+          <div class="form-group">
+            <label for="subjectNameInput" class="sr-only">New Subject Name</label>
+            <input type="text" id="subjectNameInput" placeholder="Enter new subject name" required>
+          </div>
+          <button type="submit" class="primary-button">Add Subject</button>
+        </form>
+        <div id="subjectListContainer" class="subject-list-container">
+           <p id="noSubjectsMessage">No subjects created yet. Add one above!</p>
+        </div>
+        <div id="subjectErrorMessage" class="error-message" aria-live="polite"></div>
+      </section>
+
+      <!-- Topic Management Section (hidden until a subject is selected) -->
+      <section id="topicManagementSection" class="card" style="display: none;">
+        <h2 id="selectedSubjectForTopicsTitle">Topics for <span></span></h2>
+        <form id="createTopicForm" class="form-inline">
+            <div class="form-group">
+                <label for="topicTitleInput" class="sr-only">New Topic Title</label>
+                <input type="text" id="topicTitleInput" placeholder="Enter new topic title" required>
+            </div>
+            <button type="submit" class="primary-button">Add Topic</button>
+        </form>
+        <div id="topicListContainer" class="topic-list-container">
+            <p id="noTopicsMessage">No topics for this subject yet. Add one above!</p>
+        </div>
+        <div id="topicErrorMessage" class="error-message" aria-live="polite"></div>
+      </section>
+
+      <!-- Flashcard Generation & Display Section (hidden until a topic is selected) -->
+      <section id="flashcardSection" class="card" style="display: none;">
+        <h2 id="currentSubjectTopicTitle">
+            Generate Flashcards for Subject: <span id="selectedSubjectDisplayForFlashcards"></span> - Topic: <span id="selectedTopicDisplayForFlashcards"></span>
+        </h2>
+         <form id="generateFlashcardsForm">
+            <div class="form-group">
+                <label for="topicInput">Topic Details/Terms (topicArea)</label>
+                <textarea id="topicInput" placeholder="e.g., Cells: nucleus, mitochondria, cell membrane"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="countInput">Count</label>
+                <input id="countInput" type="number" min="1" max="50" value="10" />
+            </div>
+            <button id="generateButton" type="submit" class="primary-button">Generate Flashcards</button>
+        </form>
+        <div id="generatorControls"></div>
+        <div id="errorMessage" class="error-message" aria-live="polite"></div>
+        <div id="flashcardsContainer" class="flashcards-container"></div>
+         <div id="savedFlashcardsSection" class="saved-flashcards-section" style="display: none;">
+            <h3>Saved Flashcards for <span id="selectedTopicDisplayForSaved"></span></h3>
+            <div id="savedFlashcardsContainer" class="flashcards-container"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Flashcard Pro. Makes Notes Easy.</p>
+  </footer>
+  <script type="module" src="index.js"></script>
+</body>
+</html>

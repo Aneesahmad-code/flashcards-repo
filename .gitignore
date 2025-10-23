@@ -1,0 +1,132 @@
+# ===============================
+# GLOBAL / COMMON IGNORE RULES
+# ===============================
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+*.env
+!example.env  # keep example env files if you have them
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pip-log.txt
+
+# ===============================
+# FRONTEND (Next.js / Node.js / Vite)
+# ===============================
+
+# Dependency directories
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+.vite/
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Vercel / Netlify
+.vercel/
+.netlify/
+
+# ===============================
+# PYTHON BACKEND (FastAPI)
+# ===============================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+env_old/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.pyre/
+.pytype/
+
+# SQLite dev DBs
+*.db
+*.sqlite3
+
+# ===============================
+# PRISMA (PostgreSQL / Schema)
+# ===============================
+
+# Node dependencies if Prisma CLI used locally
+prisma/node_modules/
+
+# Local SQLite files (used only in dev)
+*.db
+*.db-journal
+
+# Ignore generated client (optional)
+# Uncomment if you generate Prisma client locally and not needed in repo
+# prisma/generated/
+
+# ===============================
+# OTHER PROJECT FILES
+# ===============================
+
+# Compiled TypeScript files
+*.tsbuildinfo
+
+# MacOS metadata
+.AppleDouble
+.LSOverride
+
+# Backup files
+*~
+*.bak
+*.orig
+
+# ===============================
+# END OF FILE
+# ===============================

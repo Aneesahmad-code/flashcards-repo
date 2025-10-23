@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Update Student model in prisma/schema.prisma
+model Student {
+  id       Int          @id @default(autoincrement())
+  name     String
+  email    String       @unique
+  password String
+  school   String? // optional
+  year     Int? // optional
+  country  String? // optional
+  level    SchoolLevel?
+  subjects Subject[]
+}
+
+enum SchoolLevel {
+  Primary
+  Middle
+  Higher
+}
+
+// Update Subject model in prisma/schema.prisma
+model Subject {
+  id        Int     @id @default(autoincrement())
+  title     String
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+  topics    Topic[]
+}
+
+// Update Topic model in prisma/schema.prisma
+model Topic {
+  id         Int         @id @default(autoincrement())
+  title      String
+  subject    Subject     @relation(fields: [subjectId], references: [id])
+  subjectId  Int
+  flashcards Flashcard[]
+}
+
+// Update Flashcard model in prisma/schema.prisma
+model Flashcard {
+  id      Int    @id @default(autoincrement())
+  value   String
+  topic   Topic  @relation(fields: [topicId], references: [id])
+  topicId Int
+}

@@ -1,0 +1,504 @@
+
+:root {
+  --light-bg: #f8f9fa; /* Lighter grey for light mode */
+  --dark-bg: #202124;  /* Google dark grey */
+  --light-surface: #ffffff;
+  --dark-surface: #2d2e30; /* Slightly lighter dark surface */
+  --light-text-primary: #202124;
+  --dark-text-primary: #e8eaed; /* Google dark mode text */
+  --light-text-secondary: #5f6368;
+  --dark-text-secondary: #bdc1c6; /* Google dark mode secondary text */
+  --light-primary: #1a73e8; /* Google Blue */
+  --dark-primary: #8ab4f8; /* Lighter Google Blue for dark mode */
+  --light-primary-hover: #185abc;
+  --dark-primary-hover: #aecbfa;
+  --light-border: #dadce0;
+  --dark-border: #5f6368;
+  --light-error: #d93025;
+  --dark-error: #f28b82;
+  --light-success: #1e8e3e; /* Green for success messages */
+  --dark-success: #5bb974;
+  --light-card-bg: #e8f0fe; /* Light blue background for cards */
+  --dark-card-bg: #3c4043; /* Darker grey for cards */
+  --light-disabled-bg: #e0e0e0;
+  --dark-disabled-bg: #3c4043;
+  --light-disabled-text: #a0a0a0;
+  --dark-disabled-text: #7f8184;
+  --light-shadow-color-1: rgba(60, 64, 67, 0.15);
+  --dark-shadow-color-1: rgba(0, 0, 0, 0.3);
+  --light-shadow-color-2: rgba(60, 64, 67, 0.1);
+  --dark-shadow-color-2: rgba(0, 0, 0, 0.2);
+  --light-focus-shadow-color: rgba(26, 115, 232, 0.2);
+  --dark-focus-shadow-color: rgba(138, 180, 248, 0.3);
+  --light-button-focus-shadow-color: rgba(26, 115, 232, 0.3);
+  --dark-button-focus-shadow-color: rgba(138, 180, 248, 0.4);
+  --light-button-text: white;
+  --dark-button-text: var(--dark-bg); /* Use dark background for text on light blue */
+  --flashcard-width: 220px;
+  --flashcard-height: 180px; /* Increased height to accommodate action buttons */
+}
+
+body {
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  margin: 0;
+  background-color: light-dark(var(--light-bg), var(--dark-bg));
+  color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+  display: flex;
+  flex-direction: column; /* Allow header and main to stack */
+  align-items: center;
+  min-height: 100vh;
+  padding: 0; /* Remove body padding, handle in sections */
+  box-sizing: border-box;
+}
+
+.app-header {
+  width: 100%;
+  background-color: light-dark(var(--light-surface), var(--dark-surface));
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-title h1 {
+  color: light-dark(var(--light-primary), var(--dark-primary));
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: 500;
+}
+
+.nav-button {
+  background-color: transparent;
+  color: light-dark(var(--light-primary), var(--dark-primary));
+  padding: 8px 16px;
+  border: 1px solid light-dark(var(--light-primary), var(--dark-primary));
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  margin-left: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: light-dark(var(--light-primary), var(--dark-primary));
+  color: light-dark(var(--light-button-text), var(--dark-button-text));
+}
+
+.user-nav {
+  display: flex;
+  align-items: center;
+}
+
+.welcome-message {
+  margin-right: 15px;
+  font-size: 0.9em;
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+}
+
+.container {
+  padding: 20px; /* Reduced padding */
+  width: 100%;
+  max-width: 900px; /* Increased max-width */
+  text-align: center;
+  margin-top: 30px;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: light-dark(var(--light-surface), var(--dark-surface));
+  padding: 30px; /* Consistent padding for cards */
+  border-radius: 12px;
+  box-shadow: 0 1px 3px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1)),
+              0 4px 8px light-dark(var(--light-shadow-color-2), var(--dark-shadow-color-2));
+  margin-bottom: 30px; /* Space between cards */
+  text-align: left; /* Align text to left in cards */
+}
+
+.card h2 {
+  color: light-dark(var(--light-primary), var(--dark-primary));
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  font-weight: 500;
+  text-align: center; /* Center card titles */
+}
+.card h2 span { /* For spans within h2, like subject/topic titles */
+    font-weight: 600;
+    color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+}
+
+
+.auth-section h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+textarea {
+  width: calc(100% - 22px); /* Account for padding */
+  padding: 12px;
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: light-dark(var(--light-bg), var(--dark-card-bg));
+  color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="email"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: light-dark(var(--light-primary), var(--dark-primary));
+  box-shadow: 0 0 0 2px light-dark(var(--light-focus-shadow-color), var(--dark-focus-shadow-color));
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+
+.primary-button {
+  background-color: light-dark(var(--light-primary), var(--dark-primary));
+  color: light-dark(var(--light-button-text), var(--dark-button-text));
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 2px light-dark(var(--light-shadow-color-2), var(--dark-shadow-color-2));
+  display: block; /* Make buttons block for full width in forms */
+  width: 100%;
+  margin-top: 10px;
+}
+
+.primary-button:hover {
+  background-color: light-dark(var(--light-primary-hover), var(--dark-primary-hover));
+  box-shadow: 0 1px 3px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+}
+
+.primary-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px light-dark(var(--light-button-focus-shadow-color), var(--dark-button-focus-shadow-color));
+}
+
+.primary-button:disabled {
+  background-color: light-dark(var(--light-disabled-bg), var(--dark-disabled-bg));
+  color: light-dark(var(--light-disabled-text), var(--dark-disabled-text));
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9em;
+}
+
+.auth-switch a {
+  color: light-dark(var(--light-primary), var(--dark-primary));
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: light-dark(var(--light-error), var(--dark-error));
+  margin-top: 15px;
+  font-weight: 500;
+  min-height: 1.2em; /* Reserve space */
+  text-align: center;
+  font-size: 0.9em;
+}
+.success-message {
+  color: light-dark(var(--light-success), var(--dark-success));
+  margin-top: 15px;
+  font-weight: 500;
+  min-height: 1.2em;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+
+/* Subject & Topic Management Styles */
+.form-inline {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end; /* Align items to bottom if they have different heights */
+    margin-bottom: 20px;
+}
+
+.form-inline .form-group {
+    flex-grow: 1;
+    margin-bottom: 0; /* Remove bottom margin from form-group within form-inline */
+}
+
+.form-inline input[type="text"] {
+    width: calc(100% - 24px); /* Adjust width based on padding/border */
+}
+
+.form-inline button {
+    width: auto; /* Allow button to size based on content */
+    padding: 12px 20px; /* Consistent padding with other buttons */
+    margin-top: 0; /* Remove top margin */
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+
+.subject-list-container, .topic-list-container {
+    margin-top: 20px;
+}
+
+.subject-list, .topic-list {
+    list-style: none;
+    padding: 0;
+}
+
+.subject-item, .topic-item {
+    display: flex; /* Use flexbox to align name and actions */
+    justify-content: space-between; /* Space out name and actions */
+    align-items: center; /* Vertically align items */
+    background-color: light-dark(var(--light-bg), var(--dark-card-bg));
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-left 0.2s ease;
+    border: 1px solid light-dark(var(--light-border), var(--dark-border));
+    border-left: 5px solid transparent;
+}
+
+.subject-name, .topic-name { /* Shared class for styling title/name part */
+    flex-grow: 1; /* Allow name to take up available space */
+    margin-right: 10px; /* Space between name and actions */
+}
+
+.subject-actions, .topic-actions { /* Shared class for styling action buttons container */
+    display: flex; /* Align buttons horizontally */
+}
+
+.subject-actions button, .topic-actions button {
+    margin-left: 8px; /* Space between buttons */
+}
+
+.subject-item:hover, .topic-item:hover {
+    background-color: light-dark(var(--light-card-bg), #4a4e51);
+    border-left-color: light-dark(var(--light-primary-hover), var(--dark-primary-hover));
+}
+.subject-item.selected, .topic-item.selected {
+    background-color: light-dark(var(--light-card-bg), #4a4e51);
+    border-left: 5px solid light-dark(var(--light-primary), var(--dark-primary));
+    font-weight: 500;
+    color: light-dark(var(--light-primary), var(--dark-primary));
+}
+
+.button-link {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    color: light-dark(var(--light-primary), var(--dark-primary));
+    cursor: pointer;
+    font-size: 0.85em;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.button-link:hover {
+    background-color: light-dark(var(--light-bg), var(--dark-card-bg)); /* Subtle hover */
+    text-decoration: underline;
+}
+
+.edit-subject-btn, .edit-topic-btn {
+    /* specific styles if needed */
+}
+
+.delete-subject-btn, .delete-topic-btn {
+    color: light-dark(var(--light-error), var(--dark-error));
+}
+.delete-subject-btn:hover, .delete-topic-btn:hover {
+    color: light-dark(var(--light-button-text), var(--dark-button-text)); /* Ensure text is visible on hover background */
+    background-color: light-dark(var(--light-error), var(--dark-error));
+}
+
+
+/* Flashcard Styles */
+#flashcardSection h2, #savedFlashcardsSection h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+#flashcardSection h2 span, #savedFlashcardsSection h3 span { /* For Subject/Topic titles in headings */
+    font-weight: 700;
+    color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+    margin: 0 3px; /* Small margin around title spans */
+}
+
+
+.flashcards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-top: 20px;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.flashcard {
+  background-color: transparent; /* Important for perspective to work on children */
+  width: var(--flashcard-width);
+  height: var(--flashcard-height);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  perspective: 1000px; /* Apply perspective here if flashcard itself is the direct parent of inner */
+  box-shadow: none; /* Remove shadow from the outer container */
+  display: flex; /* Allow inner content and actions to stack */
+  flex-direction: column;
+  position: relative; /* For absolute positioning of actions */
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 30px); /* Adjust height if actions are outside and take space */
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 1px 2px light-dark(var(--light-shadow-color-2), var(--dark-shadow-color-2));
+  border-radius: 10px;
+  flex-grow: 1; /* Allow flashcard content to take up space */
+}
+
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  background-color: light-dark(var(--light-card-bg), var(--dark-card-bg));
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+.flashcard:hover .flashcard-inner {
+  box-shadow: 0 4px 8px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+}
+
+.flashcard:hover .flashcard-front,
+.flashcard:hover .flashcard-back {
+   border-color: light-dark(var(--light-primary), var(--dark-primary));
+}
+
+.term {
+  font-size: 1.2em;
+  font-weight: 500;
+  color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+}
+
+.definition {
+  font-size: 0.95em;
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+  line-height: 1.4;
+}
+
+.flashcard-actions {
+    display: flex;
+    justify-content: space-around; /* Distribute buttons */
+    align-items: center;
+    padding: 5px 0; /* Small padding around actions */
+    width: 100%;
+    height: 30px; /* Fixed height for the actions bar */
+    box-sizing: border-box;
+    margin-top: auto; /* Push actions to the bottom if flashcard is flex column */
+}
+
+.edit-flashcard-btn, .delete-flashcard-btn {
+    font-size: 0.8em; /* Smaller font for action buttons */
+    padding: 3px 6px; /* Smaller padding */
+}
+.delete-flashcard-btn {
+    color: light-dark(var(--light-error), var(--dark-error));
+}
+.delete-flashcard-btn:hover {
+    background-color: light-dark(var(--light-error), var(--dark-error));
+    color: light-dark(var(--light-button-text), var(--dark-button-text));
+}
+
+
+.sr-only { /* Screen reader only class */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+
+footer {
+  width: 100%;
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid light-dark(var(--light-border), var(--dark-border));
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+  font-size: 0.9em;
+  background-color: light-dark(var(--light-surface), var(--dark-surface));
+}
+
+/* Styles for saved flashcards section */
+.saved-flashcards-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid light-dark(var(--light-border), var(--dark-border));
+}
+
+#noSubjectsMessage, #noTopicsMessage { /* Shared style for empty list messages */
+    text-align: center;
+    color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+    margin-top: 20px;
+}
