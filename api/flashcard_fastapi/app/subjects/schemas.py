@@ -7,6 +7,12 @@ class SubjectCreate(BaseModel):
     """
     title: str
 
+class SubjectUpdate(BaseModel):
+    """
+    Request model for updating a subject's title.
+    """
+    title: str
+
 
 class SubjectOut(BaseModel):
     """

@@ -22,13 +22,13 @@ export async function fetchAPI(endpoint, options = {}) {
   if (state.jwt) options.headers['Authorization'] = `Bearer ${state.jwt}`;
 
   const url = `${API_BASE_URL}${endpoint}`;
-  console.debug('[API] →', options.method || 'GET', url);
+  console.debug('[API] ->', options.method || 'GET', url);
 
   const resp = await fetch(url, options).catch((e) => {
     console.error('Network error:', e);
     throw e;
   });
-  console.debug('[API] ←', resp.status, url);
+  console.debug('[API] <-', resp.status, url);
 
   if (!resp.ok) {
     let data;
@@ -49,3 +49,4 @@ export const endpoints = {
   // Some backends expose a topic-only list route
   flashcardsListByTopic(topicId) { return `/flashcards/topics/${topicId}/flashcards`; },
 };
+

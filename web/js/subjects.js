@@ -87,10 +87,14 @@ function renderSubjectsList(subjectsCardEl) {
       const next = prompt(`Rename "${subj.title}"`, subj.title);
       if (next && next.trim() && next.trim() !== subj.title) {
         try {
-          const updated = await fetchAPI(`${endpoints.subjects(state.studentId)}/${subj.id}`, {
+          let updated = await fetchAPI(`${endpoints.subjects(state.studentId)}/${subj.id}`, {
             method: 'PATCH',
             body: JSON.stringify({ title: next.trim() }),
           });
+          // Some backends return 204 No Content on update
+          if (!updated) {
+            updated = { ...subj, title: next.trim() };
+          }
           setSubjects(state.subjects.map(s => (s.id === subj.id ? updated : s)));
           renderSubjectsList(subjectsCardEl);
         } catch (err) {

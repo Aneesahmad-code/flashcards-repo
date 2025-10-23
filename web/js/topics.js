@@ -1,5 +1,5 @@
 // /js/topics.js
-import { state, setTopics } from './state.js';
+import { state, setTopics, selectTopic } from './state.js';
 import { showFlashcardsForTopic } from './flashcards.js';
 import { fetchAPI, endpoints } from './api.js';
 
@@ -25,6 +25,17 @@ export function showTopicsForSubject(subject) {
   if (emptyMsg) emptyMsg.style.display = 'none';
   if (errBox) errBox.textContent = '';
   if (titleInput) titleInput.value = '';
+
+  // When switching subjects, clear any previously shown topic and flashcards
+  try { selectTopic(null); } catch {}
+  const flashSection = $('flashcardSection');
+  const genHost = $('flashcardsContainer');
+  const savedHost = $('savedFlashcardsContainer');
+  const savedSection = $('savedFlashcardsSection');
+  if (genHost) genHost.innerHTML = '';
+  if (savedHost) savedHost.innerHTML = '';
+  if (savedSection) savedSection.style.display = 'none';
+  if (flashSection) flashSection.style.display = 'none';
 
   if (createForm && !createForm.dataset.bound) {
     createForm.addEventListener('submit', async (e) => {

@@ -26,3 +26,32 @@ def get_subject_owned_by_student(db: Session, *, student_id: int, subject_id: in
         .first()
     )
 
+
+def update_subject_title_for_student(
+    db: Session, *, student_id: int, subject_id: int, title: str
+) -> Subject:
+    """Update a subject's title if it belongs to the student.
+
+    Raises ValueError if the subject is not found for the student.
+    """
+    s = get_subject_owned_by_student(db, student_id=student_id, subject_id=subject_id)
+    if not s:
+        raise ValueError("Subject not found for this student")
+    s.title = title
+    db.add(s)
+    db.commit()
+    db.refresh(s)
+    return s
+
+
+def delete_subject_for_student(db: Session, *, student_id: int, subject_id: int) -> None:
+    """Delete a subject owned by the student.
+
+    Topics and flashcards are deleted via ORM cascade configured on the model.
+    Raises ValueError if the subject is not found for the student.
+    """
+    s = get_subject_owned_by_student(db, student_id=student_id, subject_id=subject_id)
+    if not s:
+        raise ValueError("Subject not found for this student")
+    db.delete(s)
+    db.commit()

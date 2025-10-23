@@ -212,6 +212,34 @@ textarea {
   box-shadow: none;
 }
 
+/* Secondary and Danger buttons for actions (Edit/Delete) */
+.secondary-button {
+  background-color: light-dark(#f1f3f4, #3c4043);
+  color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+  padding: 8px 12px;
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+.secondary-button:hover {
+  background-color: light-dark(#e8eaed, #4a4e51);
+}
+
+.danger-button {
+  background-color: transparent;
+  color: light-dark(var(--light-error), var(--dark-error));
+  padding: 8px 12px;
+  border: 1px solid light-dark(var(--light-error), var(--dark-error));
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+.danger-button:hover {
+  background-color: light-dark(var(--light-error), var(--dark-error));
+  color: light-dark(var(--light-button-text), var(--dark-button-text));
+}
+
 .auth-switch {
   text-align: center;
   margin-top: 20px;

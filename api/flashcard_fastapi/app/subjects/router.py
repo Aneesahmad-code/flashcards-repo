@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..deps import get_db
-from .schemas import SubjectCreate, SubjectOut
+from .schemas import SubjectCreate, SubjectOut, SubjectUpdate
 from .service import (
     create_subject_for_student,
     list_subjects_for_student,
     get_subject_owned_by_student,
+    update_subject_title_for_student,
+    delete_subject_for_student,
 )
 
 router = APIRouter()
@@ -59,3 +61,40 @@ def get_subject(student_id: int, subject_id: int, db: Session = Depends(get_db))
         title=s.title,
         student_id=getattr(s, "student_id", getattr(s, "studentId"))
     )
+
+
+@router.patch(
+    "/students/{student_id}/subjects/{subject_id}",
+    response_model=SubjectOut,
+    status_code=status.HTTP_200_OK,
+)
+def update_subject(
+    student_id: int,
+    subject_id: int,
+    payload: SubjectUpdate,
+    db: Session = Depends(get_db),
+):
+    try:
+        s = update_subject_title_for_student(
+            db, student_id=student_id, subject_id=subject_id, title=payload.title
+        )
+        return SubjectOut(
+            id=s.id,
+            title=s.title,
+            student_id=getattr(s, "student_id", getattr(s, "studentId"))
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.delete(
+    "/students/{student_id}/subjects/{subject_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_subject(student_id: int, subject_id: int, db: Session = Depends(get_db)):
+    try:
+        delete_subject_for_student(db, student_id=student_id, subject_id=subject_id)
+    except ValueError as e:
+        # Not found for this student
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return None

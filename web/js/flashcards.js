@@ -26,9 +26,16 @@ export function showFlashcardsForTopic(topic) {
   const input = $('topicInput');
   const countInput = $('countInput');
   const errBox = $('errorMessage');
+  const genHost = $('flashcardsContainer');
+  const savedHost = $('savedFlashcardsContainer');
+  const savedSection = $('savedFlashcardsSection');
   if (input) input.value = '';
   if (countInput && !countInput.value) countInput.value = '10';
   if (errBox) errBox.textContent = '';
+  // Clear any previously displayed cards so we only show for current topic
+  if (genHost) genHost.innerHTML = '';
+  if (savedHost) savedHost.innerHTML = '';
+  if (savedSection) savedSection.style.display = 'none';
 
   // Bind form submit (once)
   const form = $('generateFlashcardsForm');
