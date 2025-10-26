@@ -15,7 +15,8 @@ app.add_middleware(
         "http://localhost:5173",    # Vite dev server (npm run dev)
         "http://localhost:5174",
         "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174"
+        "http://127.0.0.1:5174",
+        "https://flashcards-repo.onrender.com"  # ✅ your deployed frontend
     ],
     allow_credentials=True,         # allow cookies or auth headers
     allow_methods=["*"],            # allow all methods (GET, POST, etc.)
