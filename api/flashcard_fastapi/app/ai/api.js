@@ -4,17 +4,34 @@ const _LOCAL_BASE = 'http://127.0.0.1:8000';
 const _PROD_BASE = 'https://flashcards-fastapi.onrender.com';
 
 export const API_BASE_URL = (function () {
-  // 1) window.API_BASE_URL wins if set (lets you override without rebuild)
+  // 1) Window override (set in index.html before bundle)
   if (typeof window !== 'undefined' && window.API_BASE_URL) {
     return window.API_BASE_URL;
   }
-  // 2) If hosted on onrender.com (your prod frontend), use prod API
+  // 2) Vite env at build time (preferred in prod builds)
+  try {
+    // import.meta.env is only available when bundled by Vite
+    // eslint-disable-next-line no-undef
+    if (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env) {
+      // eslint-disable-next-line no-undef
+      const viteUrl = import.meta.env.VITE_API_BASE_URL;
+      if (viteUrl) return viteUrl;
+    }
+  } catch {}
+  // 3) process.env fallback (some bundlers inject these)
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      const envUrl = process.env.VITE_API_BASE_URL || process.env.API_BASE_URL;
+      if (envUrl) return envUrl;
+    }
+  } catch {}
+  // 4) Auto-detect prod by hostname
   try {
     if (typeof window !== 'undefined' && String(window.location.hostname).includes('onrender.com')) {
       return _PROD_BASE;
     }
   } catch {}
-  // 3) Fallback to local dev
+  // 5) Fallback to local dev
   return _LOCAL_BASE;
 })();
 export const API_PREFIX = '';
