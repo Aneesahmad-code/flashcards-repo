@@ -29,7 +29,7 @@ app.add_middleware(
         "https://flashcards-repo.onrender.com",
         "https://www.flashcards-repo.onrender.com",
     ],
-    allow_origin_regex=r"https://.*\\.onrender\\.com$",
+    allow_origin_regex=r"https://.*\.onrender\.com$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,3 +47,4 @@ app.include_router(flashcards_router, prefix="/flashcards", tags=["flashcards"])
 @app.get("/")
 def health():
     return {"status": "ok"}
+
