@@ -22,6 +22,18 @@ app.add_middleware(
     allow_methods=["*"],            # allow all methods (GET, POST, etc.)
     allow_headers=["*"],            # allow all headers (Authorization, etc.)
 )
+# Additional CORS allowance for deployed onrender domains
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://flashcards-repo.onrender.com",
+        "https://www.flashcards-repo.onrender.com",
+    ],
+    allow_origin_regex=r"https://.*\\.onrender\\.com$",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # DEV ONLY: create tables automatically (use Alembic for prod)
 Base.metadata.create_all(bind=engine)
 
@@ -35,4 +47,3 @@ app.include_router(flashcards_router, prefix="/flashcards", tags=["flashcards"])
 @app.get("/")
 def health():
     return {"status": "ok"}
-
