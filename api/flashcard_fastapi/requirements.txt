@@ -8,3 +8,4 @@ PyJWT==2.9.0
 psycopg2-binary
 pydantic[email]
 google-generativeai
+python-multipart==0.0.9
