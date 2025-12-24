@@ -117,10 +117,18 @@
         <h2 id="currentSubjectTopicTitle">
             Generate Flashcards for Subject: <span id="selectedSubjectDisplayForFlashcards"></span> - Topic: <span id="selectedTopicDisplayForFlashcards"></span>
         </h2>
-         <form id="generateFlashcardsForm">
+        <form id="generateFlashcardsForm">
             <div class="form-group">
                 <label for="topicInput">Topic Details/Terms (topicArea)</label>
                 <textarea id="topicInput" placeholder="e.g., Cells: nucleus, mitochondria, cell membrane"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="imageInput">Add Images (optional)</label>
+                <input id="imageInput" type="file" accept="image/*" multiple />
+                <div id="imageDropZone" class="drop-zone" aria-label="Drop images here or paste from clipboard">
+                    <p>Drag & drop images here, or paste an image (Ctrl/Cmd+V)</p>
+                    <div id="imagePreviewList" class="image-previews"></div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="countInput">Count</label>

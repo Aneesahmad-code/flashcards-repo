@@ -1,5 +1,5 @@
 # app/ai/gemini.py
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import re
 import google.generativeai as genai
 from ..config import settings
@@ -52,4 +52,45 @@ def generate_flashcards(*, subject_title: str, topic_title: str, topic_area: str
     text = resp.text or ""
     cards = _parse_pairs(text)
     # If model returned more, trim; if less, return whatever we got
+    return cards[:count]
+
+
+def generate_flashcards_with_image(
+    *,
+    subject_title: str,
+    topic_title: str,
+    topic_area: Optional[str],
+    count: int,
+    image_bytes: bytes,
+    image_mime: Optional[str] = None,
+) -> List[Tuple[str, str]]:
+    """Generate flashcards using both text instructions and an image.
+
+    The image is passed as raw bytes to Gemini along with a clear instruction
+    to extract key concepts relevant to the provided subject/topic.
+    """
+    if not image_bytes:
+        return []
+
+    if not image_mime:
+        image_mime = "image/png"
+
+    instructions = (
+        _build_prompt(
+            subject_title=subject_title,
+            topic_title=topic_title,
+            topic_area=topic_area,
+            count=count,
+        )
+        + "\nUse the provided image to infer or refine the terms."
+    )
+
+    parts = [
+        instructions,
+        {"mime_type": image_mime, "data": image_bytes},
+    ]
+
+    resp = _model.generate_content(parts)
+    text = getattr(resp, "text", None) or ""
+    cards = _parse_pairs(text)
     return cards[:count]

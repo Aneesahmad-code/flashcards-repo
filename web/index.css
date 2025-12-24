@@ -528,5 +528,33 @@ footer {
 #noSubjectsMessage, #noTopicsMessage { /* Shared style for empty list messages */
     text-align: center;
     color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
-    margin-top: 20px;
+  margin-top: 20px;
+}
+
+/* Media input drop zone and previews */
+.drop-zone {
+  margin-top: 8px;
+  border: 2px dashed light-dark(var(--light-border), var(--dark-border));
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+}
+.drop-zone.dragover {
+  border-color: light-dark(var(--light-primary), var(--dark-primary));
+  background-color: light-dark(var(--light-card-bg), #3a3d40);
+}
+.image-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.image-previews img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
 }

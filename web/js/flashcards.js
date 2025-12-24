@@ -4,6 +4,9 @@ import { fetchAPI, endpoints } from './api.js';
 
 const $ = (id) => document.getElementById(id);
 
+// Keep pending images for current generation session
+let pendingImages = [];
+
 export function showFlashcardsForTopic(topic) {
   selectTopic(topic);
 
@@ -29,6 +32,9 @@ export function showFlashcardsForTopic(topic) {
   const genHost = $('flashcardsContainer');
   const savedHost = $('savedFlashcardsContainer');
   const savedSection = $('savedFlashcardsSection');
+  const imageInput = $('imageInput');
+  const dropZone = $('imageDropZone');
+  const previewList = $('imagePreviewList');
   if (input) input.value = '';
   if (countInput && !countInput.value) countInput.value = '10';
   if (errBox) errBox.textContent = '';
@@ -36,6 +42,41 @@ export function showFlashcardsForTopic(topic) {
   if (genHost) genHost.innerHTML = '';
   if (savedHost) savedHost.innerHTML = '';
   if (savedSection) savedSection.style.display = 'none';
+  // Reset media inputs
+  pendingImages = [];
+  if (imageInput) imageInput.value = '';
+  if (previewList) previewList.innerHTML = '';
+  if (dropZone) {
+    dropZone.classList.remove('dragover');
+    // Bind once
+    if (!dropZone.dataset.bound) {
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+      dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer?.files); });
+      dropZone.dataset.bound = '1';
+    }
+  }
+  if (imageInput && !imageInput.dataset.bound) {
+    imageInput.addEventListener('change', (e) => handleFiles(e.currentTarget.files));
+    imageInput.dataset.bound = '1';
+  }
+  // Paste support on textarea
+  if (input && !input.dataset.pasteBound) {
+    input.addEventListener('paste', (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      const files = [];
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        if (it.kind === 'file' && it.type.startsWith('image/')) {
+          const f = it.getAsFile();
+          if (f) files.push(f);
+        }
+      }
+      if (files.length) handleFiles(files);
+    });
+    input.dataset.pasteBound = '1';
+  }
 
   // Bind form submit (once)
   const form = $('generateFlashcardsForm');
@@ -69,10 +110,20 @@ async function onGenerate(e) {
     if (genBtn) genBtn.disabled = true;
     if (errBox) errBox.textContent = '';
 
-    const payload = { topicArea, count };
+    // Always call the media endpoint using FormData so images can be sent
+    const fd = new FormData();
+    // Call exactly per API spec: topicArea, count, image (multipart/form-data)
+    fd.set('topicArea', topicArea);
+    fd.set('count', String(count));
+    // The API expects a single file field named 'image'
+    if (pendingImages && pendingImages.length > 0) {
+      const f = pendingImages[0];
+      fd.append('image', f, f.name || 'image.png');
+    }
+
     const res = await fetchAPI(
-      endpoints.flashcardsGenerate(state.studentId, state.selectedTopic.id),
-      { method: 'POST', body: JSON.stringify(payload) }
+      endpoints.flashcardsGenerateMedia(state.studentId, state.selectedTopic.id),
+      { method: 'POST', body: fd }
     );
 
     // If API returns generated items, render them immediately
@@ -97,15 +148,15 @@ async function loadSavedFlashcards() {
   if (!savedHost) return;
   try {
     let res;
-    // Try student-scoped list first
+    // Prefer topic-only route first to avoid 404s on some backends
     try {
       res = await fetchAPI(
-        endpoints.flashcardsList(state.studentId, state.selectedTopic.id)
-      );
-    } catch (e1) {
-      // Fallback to topic-only route
-      res = await fetchAPI(
         endpoints.flashcardsListByTopic(state.selectedTopic.id)
+      );
+    } catch (eTopicOnly) {
+      // Fallback to student-scoped route
+      res = await fetchAPI(
+        endpoints.flashcardsList(state.studentId, state.selectedTopic.id)
       );
     }
     const items = Array.isArray(res) ? res : (res?.items || []);
@@ -209,4 +260,22 @@ function buildCard(item) {
   card.appendChild(actions);
 
   return card;
+}
+
+// Helpers
+function handleFiles(fileList) {
+  if (!fileList || !fileList.length) return;
+  const previewList = $('imagePreviewList');
+  const max = 12; // avoid huge lists
+  for (let i = 0; i < fileList.length && pendingImages.length < max; i++) {
+    const f = fileList[i];
+    if (!f || !f.type?.startsWith('image/')) continue;
+    pendingImages.push(f);
+    if (previewList) {
+      const img = document.createElement('img');
+      img.alt = 'preview';
+      img.src = URL.createObjectURL(f);
+      previewList.appendChild(img);
+    }
+  }
 }
