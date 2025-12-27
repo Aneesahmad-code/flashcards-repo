@@ -57,7 +57,7 @@ def generate_and_save_flashcards(student_id: int, topic_id: int, body: GenerateF
 async def generate_and_save_flashcards_media(
     student_id: int,
     topic_id: int,
-    topicArea: str | None = Form(default=None),
+    topicArea: str = Form(..., description="Text prompt/topic details (required)"),
     count: int = Form(default=10),
     image: UploadFile | None = File(default=None),
     db: Session = Depends(get_db),
@@ -67,23 +67,32 @@ async def generate_and_save_flashcards_media(
         raise HTTPException(404, "Topic not found for this student")
     topic, subject = owned
 
-    if not image:
-        raise HTTPException(400, "Image file is required for generate-media")
-    if not image.content_type or not image.content_type.startswith("image/"):
-        raise HTTPException(400, "Only image uploads are supported")
+    # Validate required text prompt
+    if not (topicArea and topicArea.strip()):
+        raise HTTPException(400, "topicArea (text prompt) is required")
 
-    data = await image.read()
-    if not data:
-        raise HTTPException(400, "Uploaded image is empty")
-
-    pairs = gemini_generate_with_image(
-        subject_title=subject.title,
-        topic_title=topic.title,
-        topic_area=topicArea,
-        count=count,
-        image_bytes=data,
-        image_mime=image.content_type,
-    )
+    # If image provided, validate and use it; otherwise fall back to text-only
+    if image is not None:
+        if not image.content_type or not image.content_type.startswith("image/"):
+            raise HTTPException(400, "Only image uploads are supported")
+        data = await image.read()
+        if not data:
+            raise HTTPException(400, "Uploaded image is empty")
+        pairs = gemini_generate_with_image(
+            subject_title=subject.title,
+            topic_title=topic.title,
+            topic_area=topicArea,
+            count=count,
+            image_bytes=data,
+            image_mime=image.content_type,
+        )
+    else:
+        pairs = gemini_generate(
+            subject_title=subject.title,
+            topic_title=topic.title,
+            topic_area=topicArea,
+            count=count,
+        )
     if not pairs:
         raise HTTPException(502, "AI did not return any usable flashcards")
 
