@@ -1,8 +1,9 @@
 from __future__ import annotations
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Text, Enum, ForeignKey
+from sqlalchemy import Integer, String, Text, Enum, ForeignKey, DateTime
 import enum
 from typing import List, Optional
+from datetime import datetime
 from .database import Base
 
 # Prisma enum: SchoolLevel { Primary Middle Higher }
@@ -19,6 +20,8 @@ class Student(Base):
     name: Mapped[str] = mapped_column(String)
     email: Mapped[str] = mapped_column(String, unique=True, index=True)
     password: Mapped[str] = mapped_column(String)
+    totpSecret: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    totpEnabled: Mapped[bool] = mapped_column(default=False)
     school: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     country: Mapped[Optional[str]] = mapped_column(String, nullable=True)
@@ -61,3 +64,27 @@ class Flashcard(Base):
 
     topicId: Mapped[int] = mapped_column(ForeignKey("Topic.id"))
     topic: Mapped["Topic"] = relationship(back_populates="flashcards")
+
+# ---- PasswordResetToken ----
+class PasswordResetToken(Base):
+    __tablename__ = "PasswordResetToken"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    studentId: Mapped[int] = mapped_column(ForeignKey("Student.id"), index=True)
+    tokenHash: Mapped[str] = mapped_column(String, unique=True, index=True)
+    expiresAt: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    usedAt: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    student: Mapped["Student"] = relationship()
+
+
+class PasswordResetChallenge(Base):
+    __tablename__ = "PasswordResetChallenge"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    studentId: Mapped[int] = mapped_column(ForeignKey("Student.id"), index=True)
+    challengeHash: Mapped[str] = mapped_column(String, unique=True, index=True)
+    expiresAt: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    usedAt: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    student: Mapped["Student"] = relationship()

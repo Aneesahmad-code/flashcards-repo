@@ -256,6 +256,13 @@ textarea {
   text-decoration: underline;
 }
 
+.auth-helper-text {
+  text-align: center;
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
 .error-message {
   color: light-dark(var(--light-error), var(--dark-error));
   margin-top: 15px;
@@ -271,6 +278,47 @@ textarea {
   min-height: 1.2em;
   text-align: center;
   font-size: 0.9em;
+}
+
+.security-status {
+  margin: 0 0 18px;
+  text-align: center;
+  color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
+}
+
+.security-panel {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  border-radius: 10px;
+  background-color: light-dark(var(--light-bg), var(--dark-card-bg));
+}
+
+.qr-panel {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 18px;
+}
+
+#totpQrCanvas {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+}
+
+.mono-block {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: light-dark(var(--light-surface), #26282b);
+  border: 1px solid light-dark(var(--light-border), var(--dark-border));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  word-break: break-all;
 }
 
 
@@ -557,4 +605,30 @@ footer {
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid light-dark(var(--light-border), var(--dark-border));
+}
+
+@media (max-width: 700px) {
+  .app-header {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .container {
+    padding: 16px;
+    margin-top: 20px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-inline button {
+    width: 100%;
+  }
 }

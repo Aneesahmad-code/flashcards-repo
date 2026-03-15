@@ -7,7 +7,8 @@
   <script type="importmap">
     {
       "imports": {
-        "@google/genai": "https://esm.sh/@google/genai@^0.7.0"
+        "@google/genai": "https://esm.sh/@google/genai@^0.7.0",
+        "qrcode": "https://esm.sh/qrcode@^1.5.4"
       }
     }
   </script>
@@ -53,7 +54,50 @@
             <input type="password" id="loginPassword" name="password" required>
           </div>
           <button type="submit" class="primary-button">Login</button>
+          <p class="auth-switch"><a href="#" id="showForgotPassword">Forgot password?</a></p>
           <p class="auth-switch">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+        </form>
+      </section>
+
+      <section id="forgotView" class="auth-section card" style="display: none;">
+        <h2>Forgot Password</h2>
+        <form id="forgotPasswordForm">
+          <div class="form-group">
+            <label for="forgotEmail">Email</label>
+            <input type="email" id="forgotEmail" name="email" placeholder="you@example.com" required>
+          </div>
+          <button type="submit" class="primary-button">Continue with TOTP</button>
+          <p class="auth-switch"><a href="#" id="backToLoginFromForgot">Back to login</a></p>
+        </form>
+      </section>
+
+      <section id="totpRecoveryView" class="auth-section card" style="display: none;">
+        <h2>Verify TOTP</h2>
+        <p class="auth-helper-text">
+          Enter the 6-digit code from Google Authenticator to continue resetting your password.
+        </p>
+        <form id="totpRecoveryForm">
+          <input type="hidden" id="recoveryEmail" name="email">
+          <input type="hidden" id="recoveryChallengeToken" name="challenge_token">
+          <div class="form-group">
+            <label for="recoveryCode">Authenticator Code</label>
+            <input type="text" id="recoveryCode" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+          </div>
+          <button type="submit" class="primary-button">Verify code</button>
+          <p class="auth-switch"><a href="#" id="backToForgotFromTotp">Back</a></p>
+        </form>
+      </section>
+
+      <section id="resetView" class="auth-section card" style="display: none;">
+        <h2>Reset Password</h2>
+        <form id="resetPasswordForm">
+          <input type="hidden" id="resetToken" name="token">
+          <div class="form-group">
+            <label for="resetPassword">New Password</label>
+            <input type="password" id="resetPassword" name="new_password" required>
+          </div>
+          <button type="submit" class="primary-button">Update password</button>
+          <p class="auth-switch"><a href="#" id="backToLoginFromReset">Back to login</a></p>
         </form>
       </section>
 
@@ -81,6 +125,36 @@
 
     <!-- Main Application View (hidden by default) -->
     <div id="appView" style="display: none;">
+      <section id="securitySection" class="card">
+        <h2>Account Security</h2>
+        <p id="totpStatusText" class="security-status"></p>
+        <div id="totpSetupActions">
+          <button id="startTotpSetupButton" type="button" class="primary-button">Enable TOTP</button>
+        </div>
+        <div id="totpSetupPanel" class="security-panel" style="display: none;">
+          <p class="auth-helper-text">
+            Open Google Authenticator on your phone and scan this QR code, or use the setup key below.
+          </p>
+          <div class="qr-panel">
+            <canvas id="totpQrCanvas" width="220" height="220" aria-label="TOTP QR code"></canvas>
+          </div>
+          <div class="form-group">
+            <label for="totpSecretDisplay">Setup Key</label>
+            <input type="text" id="totpSecretDisplay" readonly>
+          </div>
+          <p class="auth-helper-text">If your app supports links, use this `otpauth` URL:</p>
+          <p id="totpOtpAuthUrl" class="mono-block"></p>
+          <form id="totpVerifyForm">
+            <div class="form-group">
+              <label for="totpVerifyCode">Enter 6-digit code</label>
+              <input type="text" id="totpVerifyCode" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+            </div>
+            <button type="submit" class="primary-button">Confirm TOTP</button>
+          </form>
+        </div>
+        <div id="totpMessage" class="error-message" aria-live="polite"></div>
+      </section>
+
       <section id="subjectManagement" class="card">
         <h2>My Subjects</h2>
         <form id="createSubjectForm" class="form-inline">

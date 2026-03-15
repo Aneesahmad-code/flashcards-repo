@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -13,17 +10,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Update Student model in prisma/schema.prisma
 model Student {
-  id       Int          @id @default(autoincrement())
-  name     String
-  email    String       @unique
-  password String
-  school   String? // optional
-  year     Int? // optional
-  country  String? // optional
-  level    SchoolLevel?
-  subjects Subject[]
+  id                  Int                    @id @default(autoincrement())
+  name                String
+  email               String                 @unique
+  password            String
+  totpSecret          String?
+  totpEnabled         Boolean                @default(false)
+  school              String?
+  year                Int?
+  country             String?
+  level               SchoolLevel?
+  subjects            Subject[]
+  passwordResetTokens PasswordResetToken[]
+  resetChallenges     PasswordResetChallenge[]
+
+  @@map("Student")
 }
 
 enum SchoolLevel {
@@ -32,28 +34,55 @@ enum SchoolLevel {
   Higher
 }
 
-// Update Subject model in prisma/schema.prisma
 model Subject {
   id        Int     @id @default(autoincrement())
   title     String
   student   Student @relation(fields: [studentId], references: [id])
   studentId Int
   topics    Topic[]
+
+  @@map("Subject")
 }
 
-// Update Topic model in prisma/schema.prisma
 model Topic {
   id         Int         @id @default(autoincrement())
   title      String
   subject    Subject     @relation(fields: [subjectId], references: [id])
   subjectId  Int
   flashcards Flashcard[]
+
+  @@map("Topic")
 }
 
-// Update Flashcard model in prisma/schema.prisma
 model Flashcard {
   id      Int    @id @default(autoincrement())
   value   String
   topic   Topic  @relation(fields: [topicId], references: [id])
   topicId Int
+
+  @@map("Flashcard")
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  studentId Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  student   Student   @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@map("PasswordResetToken")
+}
+
+model PasswordResetChallenge {
+  id            Int       @id @default(autoincrement())
+  studentId     Int
+  challengeHash String    @unique
+  expiresAt     DateTime
+  usedAt        DateTime?
+  student       Student   @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@map("PasswordResetChallenge")
 }
