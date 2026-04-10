@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from .database import engine, Base
+from .config import settings
 from .auth.router import router as auth_router
 from .students.router import router as students_router
 from .subjects.router import router as subjects_router
@@ -24,8 +25,10 @@ app.add_middleware(
     allow_headers=["*"],            # allow all headers (Authorization, etc.)
     allow_origin_regex=r"https://.*\.onrender\.com$",
 )
-# DEV ONLY: create tables automatically (use Alembic for prod)
-Base.metadata.create_all(bind=engine)
+
+if settings.AUTO_CREATE_TABLES:
+    # Local dev convenience only. Production schema is managed by Prisma migrations.
+    Base.metadata.create_all(bind=engine)
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(students_router, prefix="/students", tags=["students"])

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     TOTP_ISSUER: str = "Flashcards API"
     TOTP_CHALLENGE_EXPIRE_MINUTES: int = 10
     FRONTEND_BASE_URL: str = "http://localhost:5173"
+    AUTO_CREATE_TABLES: bool = False
 
     # NEW:
     GEMINI_API_KEY: str
